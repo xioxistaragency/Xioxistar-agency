@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Xioxistar - Top Up Star Tevi</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;800&display=swap">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+:root{--bg:#f4f0fb;--surface:#fff;--ink:#1e1033;--muted:#6b5c85;--line:#ddd2ee;--accent:#d6246e;--accent-ink:#fff;--star:#f5b301;--sel:#fff3d1}
+@media (prefers-color-scheme:dark){:root{--bg:#150b24;--surface:#22123a;--ink:#f3ecff;--muted:#b7a6d6;--line:#3a2860;--accent:#ff5a9c;--accent-ink:#1e1033;--sel:#3a2a12}}
+*{box-sizing:border-box}
+body{margin:0;background-color:var(--bg);background-image:url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160' viewBox='0 0 160 160'><defs><polygon id='s' points='0,-12 2.8,-3.9 11.4,-3.7 4.5,1.5 7.1,9.7 0,4.8 -7.1,9.7 -4.5,1.5 -11.4,-3.7 -2.8,-3.9'/></defs><g fill='%23f5b301' fill-opacity='.24'><use href='%23s' transform='translate(30,28) rotate(-12) scale(1.3)'/><use href='%23s' transform='translate(110,60) rotate(15) scale(.8)'/><use href='%23s' transform='translate(65,118) rotate(8)'/><use href='%23s' transform='translate(138,136) rotate(-20) scale(.6)'/></g></svg>");background-size:160px 160px;background-attachment:fixed;color:var(--ink);font-family:"Bricolage Grotesque",system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.5}
+.wrap{max-width:960px;margin:0 auto;padding:24px 16px 48px}
+h1{font-size:clamp(2rem,6vw,3.4rem);line-height:1.05;margin:8px 0;font-weight:800}
+.sub{color:var(--muted);margin:0 0 28px;max-width:52ch}
+.grid{display:grid;gap:20px;grid-template-columns:1fr}
+@media(min-width:800px){.grid{grid-template-columns:1.6fr 1fr;align-items:start}.sum{position:sticky;top:16px}}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:20px;margin-bottom:16px}
+.card h2{font-size:1.1rem;margin:0 0 12px;font-weight:600}
+input[type=text]{width:100%;font:inherit;padding:12px 14px;border-radius:10px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink)}
+input[type=text]:focus-visible,button:focus-visible,a:focus-visible,label:focus-within{outline:3px solid var(--accent);outline-offset:2px}
+.hint{font-size:.85rem;color:var(--muted);margin:8px 0 0}
+.opts{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+@media(min-width:500px){.opts.pk{grid-template-columns:repeat(3,1fr)}}
+.opt{position:relative;border:1.5px solid var(--line);border-radius:12px;padding:12px;cursor:pointer;background:var(--bg)}
+.opt input{position:absolute;opacity:0;inset:0;cursor:pointer}
+.opt:has(input:checked){border-color:var(--star);background:var(--sel)}
+.opt b{display:block;font-size:1.15rem}
+.opt span{display:block;color:var(--muted);font-size:.9rem;overflow-wrap:anywhere}
+.star{color:var(--star)}
+.row{display:flex;justify-content:space-between;gap:12px;padding:6px 0}
+.row.total{border-top:1px dashed var(--line);margin-top:8px;padding-top:12px;font-weight:800;font-size:1.2rem}
+.btn{display:block;width:100%;margin-top:14px;font:inherit;font-weight:800;padding:14px;border:0;border-radius:12px;background:var(--accent);color:var(--accent-ink);cursor:pointer;text-align:center;text-decoration:none}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.msg{margin-top:12px;padding:12px;border-radius:10px;background:var(--sel);font-size:.92rem;display:none}
+.note{font-size:.8rem;color:var(--muted);margin-top:24px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Xioxistar: top up Star Tevi</h1>
+  <p class="sub">Masukkan ID Tevi, pilih jumlah Star, lalu bayar. Star masuk ke akun setelah pembayaran terkonfirmasi.</p>
+  <div class="grid">
+    <div>
+      <div class="card">
+        <h2>1. ID akun Tevi</h2>
+        <input type="text" id="uid" inputmode="numeric" pattern="[0-9]*" autocomplete="off" placeholder="Contoh: 12345678" aria-label="ID akun Tevi (angka)">
+        <p class="hint">Isi ID berupa angka saja agar Star tidak salah kirim akun. Cek lagi sebelum transfer.</p>
+      </div>
+      <div class="card">
+        <h2>2. Pilih jumlah Star</h2>
+        <div class="opts pk" id="packs"></div>
+      </div>
+      <div class="card">
+        <h2>3. Metode pembayaran</h2>
+        <div class="opts" id="pays"></div>
+      </div>
+    </div>
+    <aside class="sum">
+      <div class="card">
+        <h2>Ringkasan pesanan</h2>
+        <div class="row"><span>ID Tevi</span><span id="sId">-</span></div>
+        <div class="row"><span>Paket</span><span id="sPack">-</span></div>
+        <div class="row"><span>Bayar via</span><span id="sPay">-</span></div>
+        <div class="row total"><span>Total</span><span id="sTotal">Rp0</span></div>
+        <button class="btn" id="go" disabled>Lihat cara bayar</button>
+        <div class="msg" id="msg"></div>
+        <a class="btn" id="wa" href="#" target="_blank" rel="noopener" style="display:none">Kirim bukti ke WhatsApp admin</a>
+      </div>
+    </aside>
+  </div>
+  <p class="note">Agency Xioxistar melayani top up Star Tevi, isi paket data internet, dan pengisian pulsa. Untuk paket data dan pulsa, tanyakan ke admin.</p>
+</div>
+<script>
+var QRIS="00020101021126570011ID.DANA.WWW011893600915303665014102090366501410303UMI51440014ID.CO.QRIS.WWW0215ID10266308100790303UMI5204481453033605802ID5917Xioxistar, Konter6009Palembang610530252630484D1";
+var PACKS=[{s:10,p:6000},{s:20,p:8000},{s:30,p:12000},{s:50,p:16000},{s:70,p:22000},{s:100,p:25000},{s:210,p:55000},{s:250,p:67000},{s:350,p:92000},{s:400,p:101000},{s:500,p:127000},{s:600,p:152000},{s:700,p:161000},{s:800,p:185000},{s:900,p:228000},{s:1000,p:253000}];
+var PAYS=[{n:"BCA",no:"6175330431"},{n:"SeaBank",no:"901636608734"},{n:"BSI",no:"7346349209"},{n:"QRIS",no:"Semua e-wallet dan m-banking",qr:true}];
+var OWNER="Rizki Rozalia";
+var st={pack:null,pay:null};
+var rp=function(n){return "Rp"+n.toLocaleString("id-ID")};
+function build(id,items,name,fn){
+  var el=document.getElementById(id);
+  items.forEach(function(it,i){
+    var l=document.createElement("label");l.className="opt";
+    l.innerHTML='<input type="radio" name="'+name+'" value="'+i+'">'+fn(it);
+    l.querySelector("input").addEventListener("change",function(){st[name]=i;render()});
+    el.appendChild(l);
+  });
+}
+build("packs",PACKS,"pack",function(x){return '<b><span class="star">★</span> '+x.s.toLocaleString("id-ID")+'</b><span>'+rp(x.p)+'</span>'});
+build("pays",PAYS,"pay",function(x){return '<b>'+x.n+'</b><span>'+x.no+'</span><span>'+(x.qr?'Xioxistar, Konter':'a.n. '+OWNER)+'</span>'});
+var uid=document.getElementById("uid");
+uid.addEventListener("input",function(){uid.value=uid.value.replace(/\D/g,"");render()});
+function render(){
+  var id=uid.value.trim(),pk=st.pack!==null?PACKS[st.pack]:null,py=st.pay!==null?PAYS[st.pay].n:null;
+  document.getElementById("wa").style.display="none";document.getElementById("msg").style.display="none";
+  document.getElementById("sId").textContent=id||"-";
+  document.getElementById("sPack").textContent=pk?pk.s.toLocaleString("id-ID")+" Star":"-";
+  document.getElementById("sPay").textContent=py||"-";
+  document.getElementById("sTotal").textContent=pk?rp(pk.p):"Rp0";
+  document.getElementById("go").disabled=!(/^[0-9]{3,}$/.test(id)&&pk&&py);
+}
+document.getElementById("go").addEventListener("click",function(){
+  var m=document.getElementById("msg");
+  m.style.display="block";
+  var b=PAYS[st.pay],k=PACKS[st.pack];
+  var w=document.getElementById("wa");
+  w.href="https://wa.me/62895352273631?text="+encodeURIComponent("Halo admin Xioxistar, saya sudah bayar top up Star Tevi.\nID Tevi: "+uid.value.trim()+"\nPaket: "+k.s+" Star\nTotal: "+rp(k.p)+"\nMetode: "+b.n+"\nBukti pembayaran saya lampirkan di chat ini.");
+  w.style.display="block";
+  if(b.qr){
+    m.textContent="Scan QRIS ini dengan aplikasi bank atau e-wallet, lalu bayar "+rp(k.p)+" ke Xioxistar, Konter. Setelah bayar, kirim bukti pembayaran dan ID Tevi (angka) ke admin agar Star dikirim ke akun yang benar.";
+    if(typeof QRCode==="function"){
+      var im=document.createElement("div");
+      im.style.cssText="width:216px;margin:12px auto 0;padding:8px;background:#fff;border-radius:8px";
+      m.appendChild(im);
+      new QRCode(im,{text:QRIS,width:200,height:200,correctLevel:QRCode.CorrectLevel.M});
+    }else{m.appendChild(document.createTextNode(" QR belum bisa dimuat, minta QRIS ke admin lewat WhatsApp."))}
+    return;
+  }
+  m.textContent="Transfer "+rp(k.p)+" ke "+b.n+" "+b.no+" a.n. "+OWNER+". Setelah transfer, kirim bukti transfer dan ID Tevi (angka) ke admin agar Star dikirim ke akun yang benar.";
+});
+</script>
+</body>
+</html>
