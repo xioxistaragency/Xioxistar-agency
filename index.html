@@ -84,6 +84,7 @@ input[type=text]:focus-visible,button:focus-visible,label:focus-within{outline:3
 var QRIS="00020101021126570011ID.DANA.WWW011893600915303665014102090366501410303UMI51440014ID.CO.QRIS.WWW0215ID10266308100790303UMI5204481453033605802ID5917Xioxistar, Konter6009Palembang610530252630484D1";
 var PACKS=[{s:10,p:6000},{s:20,p:8000},{s:30,p:12000},{s:50,p:16000},{s:70,p:22000},{s:100,p:25000},{s:210,p:55000},{s:250,p:67000},{s:350,p:92000},{s:400,p:101000},{s:500,p:127000},{s:600,p:152000},{s:700,p:161000},{s:800,p:185000},{s:900,p:228000},{s:1000,p:253000}];
 var PAYS=[{n:"BCA",no:"6175330431"},{n:"SeaBank",no:"901636608734"},{n:"BSI",no:"7346349209"},{n:"QRIS",no:"Semua e-wallet dan m-banking",qr:true}];
+var OWNER="Rizki Rozalia";
 var st={pack:null,pay:null};
 var rp=function(n){return "Rp"+n.toLocaleString("id-ID")};
 function build(id,items,name,fn){
@@ -96,7 +97,7 @@ function build(id,items,name,fn){
   });
 }
 build("packs",PACKS,"pack",function(x){return '<b><span class="star">★</span> '+x.s.toLocaleString("id-ID")+'</b><span>'+rp(x.p)+'</span>'});
-build("pays",PAYS,"pay",function(x){return '<b>'+x.n+'</b><span>'+x.no+'</span><span>'+(x.qr?'Xioxistar, Konter':'')+'</span>'});
+build("pays",PAYS,"pay",function(x){return '<b>'+x.n+'</b><span>'+x.no+'</span><span>'+(x.qr?'Xioxistar, Konter':'a.n. '+OWNER)+'</span>'});
 var uid=document.getElementById("uid");
 uid.addEventListener("input",function(){uid.value=uid.value.replace(/\D/g,"");render()});
 function render(){
@@ -114,7 +115,7 @@ document.getElementById("go").addEventListener("click",function(){
   var b=PAYS[st.pay],k=PACKS[st.pack];
   var w=document.getElementById("wa");w.href="https://wa.me/62895352273631?text="+encodeURIComponent("Halo admin Xioxistar, saya sudah bayar top up Star Tevi.\nID Tevi: "+uid.value.trim()+"\nPaket: "+k.s+" Star\nTotal: "+rp(k.p)+"\nMetode: "+b.n+"\nBukti pembayaran saya lampirkan di chat ini.");w.style.display="block";
   if(b.qr){m.textContent="Scan QRIS ini dengan aplikasi bank atau e-wallet, lalu bayar "+rp(k.p)+" ke Xioxistar, Konter. Setelah bayar, kirim bukti pembayaran dan ID Tevi (angka) ke admin agar Star dikirim ke akun yang benar.";var qd=document.createElement("div");qd.style.cssText="display:flex;justify-content:center;margin:12px auto 0;padding:12px;background:#fff;border-radius:8px;width:max-content;max-width:100%";m.appendChild(qd);new QRCode(qd,{text:QRIS,width:240,height:240,correctLevel:QRCode.CorrectLevel.M});return;}
-  m.textContent="Transfer "+rp(k.p)+" ke "+b.n+" "+b.no+". Setelah transfer, kirim bukti transfer dan ID Tevi (angka) ke admin agar Star dikirim ke akun yang benar.";
+  m.textContent="Transfer "+rp(k.p)+" ke "+b.n+" "+b.no+" a.n. "+OWNER+". Setelah transfer, kirim bukti transfer dan ID Tevi (angka) ke admin agar Star dikirim ke akun yang benar.";
 });
 </script>
 </body>
